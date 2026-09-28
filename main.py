@@ -4,13 +4,31 @@ import pygame.freetype
 import game
 import ast
 import menu_mini_jeu as mmj
+import asyncio
 
 def main_menu(user="User1", deb=True):
+    """
+    La fonction main_menu est utilisée pour afficher le menu principal du jeu. Ce menu permet à l'utilisateur de sélectionner différents niveaux et d'accéder à d'autres fonctionnalités telles que la personnalisation du skin.
+
+Paramètres :
+    user : Le nom de l'utilisateur (par défaut, "User1").
+    deb : Un indicateur indiquant si la musique doit recommencer à zéro (par défaut, True).
+Préconditions :
+    Les visuels, la musique, et les fichiers nécessaires doivent être correctement présent avant d'appeler cette fonction.
+Effets :
+    Affiche le menu principal avec des boutons pour choisir différents niveaux et accéder à d'autres fonctionnalités.
+    Gère les clics de l'utilisateur pour rediriger vers les niveaux, le menu de personnalisation du skin ou le menu des mini-jeux.
+    Affiche le solde actuel de l'utilisateur et l'état de déblocage des niveaux.
+Postconditions :
+    La fonction se termine lorsque l'utilisateur ferme la fenêtre.
+    """
     skin="visual/perso_mec/mec1.png"
     with open("skin.txt","r") as f:
         for l in f:
             skin=l
+
     if deb:
+
         pygame.mixer.music.unload()
         pygame.mixer.quit()
 
@@ -19,14 +37,12 @@ def main_menu(user="User1", deb=True):
         pygame.display.set_icon(logo_jeu)
 
         pygame.mixer.init()
-        pygame.mixer.music.load("sound/musique_menu_comp.mp3")
+        pygame.mixer.music.load("sound/musique_menu_comp.wav")
         pygame.mixer.music.set_volume(0.7)
         pygame.mixer.music.play(-1) #faire tourner en boucle
 
-
     screen = pygame.display.set_mode((1280, 720))
     GAME_FONT = pygame.freetype.Font("for_construction/font.ttf", 24)
-
 
     bg = pygame.image.load("visual/menu_background2.jpg")
     bg = pygame.transform.scale(bg, (1280, 720))
@@ -66,7 +82,6 @@ def main_menu(user="User1", deb=True):
     btn_rap=pygame.image.load("visual/barre_taille/btn_rap.png")
     btn_rap = pygame.transform.scale(btn_rap,(40,40))
 
-
     ar_niv = pygame.transform.scale(ar_niv, (60, 60))
     ar_niv_reussi = pygame.transform.scale(ar_niv_reussi, (60, 60))
 
@@ -74,11 +89,7 @@ def main_menu(user="User1", deb=True):
     txt_niv2, rect = GAME_FONT.render("Monde 2", (255, 255, 255))
 
     txt_mode_h, rect = GAME_FONT.render("MODE HISTOIRE", (255, 255, 255))
-
-
     pygame.display.set_caption("Menu")
-
-
 
     run=True
     while run:
@@ -92,9 +103,6 @@ def main_menu(user="User1", deb=True):
                 solde = dict[user]["Solde"]
 
         text_solde, rect = GAME_FONT.render(solde, (255, 255, 255))
-
-
-
 
         screen.blit(bg,(0,0))
         screen.blit(ar_menu, ((1280 - 585) / 2, (720 - 427) / 2))
@@ -151,7 +159,7 @@ def main_menu(user="User1", deb=True):
                         for elem in fichier:
                             dict = ast.literal_eval(elem)
 
-                    taille_debloque = dict[user]["niv_taille_deb"]
+
                     if dict[user]["niv_taille"]>=1:
                         dict[user]["niv_taille"]-=1
                     a = str(dict)
@@ -277,10 +285,7 @@ def main_menu(user="User1", deb=True):
                 run=False
                 pygame.quit()
 
-
         pygame.display.update()
-
     pygame.quit()
-
 if __name__=='__main__':
     main_menu()

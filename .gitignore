@@ -1,0 +1,13 @@
+# Environnement Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# IDE
+.idea/
+.vscode/
+
+# Fichiers hors projet
+test.py
+for_construction/*.eps

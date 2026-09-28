@@ -20,9 +20,9 @@ class Game:
         pygame.mixer.quit()
         pygame.mixer.init()
         if monde==1:
-            pygame.mixer.music.load("sound/creepy-devil.mp3")
+            pygame.mixer.music.load("sound/creepy-devil.wav")
         elif monde==2:
-            pygame.mixer.music.load("sound/monde2musique.mp3")
+            pygame.mixer.music.load("sound/monde2musique.wav")
         pygame.mixer.music.set_volume(0.7)
         pygame.mixer.music.play(-1)
 
@@ -67,8 +67,8 @@ class Game:
         taille=tailles_possibles[self.niv_taille]
         self.player = player.Player(player_position.x, player_position.y,skin=skin,taille=taille)
 
-        self.statue_sound = pygame.mixer.Sound("sound/short-success-sound.mp3")
-        self.victory_sound = pygame.mixer.Sound("sound/success-sound.mp3")
+        self.statue_sound = pygame.mixer.Sound("sound/short-success-sound.wav")
+        self.victory_sound = pygame.mixer.Sound("sound/success-sound.wav")
 
         self.walls = []
         self.walls_piege = []
@@ -122,7 +122,30 @@ class Game:
 
     def handle_input(self):
         """
-        gère les mouvements en appelant les fonctions de player si l'on appuie sur les bonnes touches, et gère l'inversion des touches pour le monde 6
+        La méthode handle_input a pour objectif de gérer les entrées clavier afin de contrôler le personnage du joueur dans le contexte d'un jeu. Elle appelle les méthodes appropriées du joueur en fonction des touches appuyées et gère l'inversion des touches pour le niveau 6.
+
+Comportement:
+
+    La méthode utilise la fonction pygame.key.get_pressed() pour récupérer l'état de toutes les touches du clavier.
+    Si le niveau actuel (self.niv) est inférieur à 6, la méthode traite les entrées de manière normale :
+        Si la touche UP (flèche haut) ou Z est pressée, la méthode appelle la méthode move_up du joueur et change l'animation vers le mouvement vers le haut.
+        Si la touche DOWN (flèche bas) ou S est pressée, la méthode appelle la méthode move_down du joueur et change l'animation vers le mouvement vers le bas.
+        Si la touche LEFT (flèche gauche) ou Q est pressée, la méthode appelle la méthode move_left du joueur et change l'animation vers le mouvement vers la gauche.
+        Si la touche RIGHT (flèche droite) ou D est pressée, la méthode appelle la méthode move_right du joueur et change l'animation vers le mouvement vers la droite.
+    Si le niveau actuel est 6, les touches sont inversées :
+        Si la touche UP (flèche haut) ou Z est pressée, la méthode appelle la méthode move_down du joueur et change l'animation vers le mouvement vers le bas.
+        Si la touche DOWN (flèche bas) ou S est pressée, la méthode appelle la méthode move_up du joueur et change l'animation vers le mouvement vers le haut.
+        Si la touche LEFT (flèche gauche) ou Q est pressée, la méthode appelle la méthode move_right du joueur et change l'animation vers le mouvement vers la droite.
+        Si la touche RIGHT (flèche droite) ou D est pressée, la méthode appelle la méthode move_left du joueur et change l'animation vers le mouvement vers la gauche.
+Paramètres:
+
+    Aucun paramètre n'est requis en dehors de self, car la méthode agit sur les attributs de l'instance.
+Préconditions:
+
+    La méthode suppose que le joueur (self.player) est une instance d'une classe de joueur qui expose les méthodes move_up, move_down, move_left, move_right et change_animation.
+Utilisation:
+
+    La méthode est généralement appelée à chaque itération de la boucle de jeu pour traiter les entrées utilisateur et mettre à jour le mouvement du joueur en conséquence.
         """
         pressed = pygame.key.get_pressed()
         if self.niv<6:
@@ -155,7 +178,44 @@ class Game:
 
     def update(self):
         """
-        s'occupe de toutes les actions et affichages à faire constamment comme les collisions, les statues pour le score, la réussite des niveaux...
+        La méthode update est responsable de toutes les actions et affichages constants du jeu, tels que les collisions, le suivi du score, la réussite des niveaux, etc.
+
+Comportement:
+
+    La méthode met à jour tous les sprites du groupe self.group en appelant la méthode update de chaque sprite.
+    Pour chaque sprite dans le groupe :
+        Si le sprite entre en collision avec un mur (self.walls), la méthode appelle la méthode move_back du sprite pour le déplacer en arrière.
+        Si le sprite entre en collision avec un mur invisible (self.invisible_walls) et que le niveau (self.niv) est supérieur ou égal à 4, la méthode appelle la méthode move_back du sprite pour le déplacer en arrière.
+        Si le sprite entre en collision avec un mur piège (self.walls_piege), un son de mort est joué à l'aide du fichier audio "death-sound.wav", la musique du jeu s'arrête, et le joueur est renvoyé au menu principal avec un appel à la fonction main_menu du module main.
+        Si le sprite entre en collision avec une statue (self.statue), la méthode gère l'interaction avec les différentes statues (self.statue1, self.statue2, ..., self.statue5) :
+        Si le sprite entre en collision avec self.statue1, la méthode joue un son associé, incrémente le nombre de statues trouvées (self.statue_trouve_int), met à jour la variable de texte correspondante (self.statue_trouve), et retire self.statue1 de la liste des statues.
+        Le processus est répété pour les statues suivantes (self.statue2, self.statue3, ..., self.statue5).
+    Si le sprite entre en collision avec self.table et que toutes les statues ont été trouvées (self.statue_trouve_int == 5), la méthode effectue différentes actions en fonction du niveau actuel (self.niv) :
+    Pour chaque niveau (self.niv) de 1 à 6, la méthode :
+        Met à jour le niveau réussi dans le fichier de sauvegarde (sauvegarde.txt) en fonction de la valeur actuelle.
+        Ajoute un certain nombre de gemmes (self.solde) en fonction du niveau réussi.
+        Affiche une alerte à l'aide de la bibliothèque pyautogui informant le joueur de la récompense en gemmes.
+        Arrête la musique du jeu (pygame.mixer.music.stop()).
+        Joue un son de victoire à l'aide du fichier audio "victory-sound.wav".
+        Renvoie le joueur au menu principal en appelant la fonction main_menu du module main.
+Attributs:
+
+    self.group: Groupe de sprites à mettre à jour.
+    self.walls: Liste des murs avec lesquels les sprites peuvent entrer en collision.
+    self.invisible_walls: Liste des murs invisibles avec lesquels les sprites peuvent entrer en collision (pour le niveau 4 et supérieur).
+    self.walls_piege: Liste des murs piège avec lesquels les sprites peuvent entrer en collision.
+    self.statue: Liste des statues avec lesquelles les sprites peuvent entrer en collision.
+    self.statue1, self.statue2, ..., self.statue5: Listes des statues spécifiques avec lesquelles les sprites peuvent entrer en collision.
+    self.table: Liste des tables avec lesquelles les sprites peuvent entrer en collision.
+    self.solde: Nombre de gemmes actuel du joueur.
+    self.statue_trouve_int: Nombre de statues trouvées par le joueur.
+    self.statue_trouve: Chaîne de caractères représentant le nombre de statues trouvées à des fins d'affichage.
+    self.niv: Niveau actuel du jeu.
+    self.user: Nom de l'utilisateur.
+    self.monde: Monde actuel du jeu.
+Utilisation:
+
+    La méthode est appelée à chaque itération de la boucle principale du jeu pour mettre à jour les éléments du jeu en fonction des actions du joueur.
         """
         self.group.update()
 
@@ -165,7 +225,7 @@ class Game:
             elif sprite.feet.collidelist(self.invisible_walls) > -1 and self.niv>=4:
                 sprite.move_back()
             elif sprite.feet.collidelist(self.walls_piege) > -1:
-                mort = pygame.mixer.Sound("sound/death-sound.mp3")
+                mort = pygame.mixer.Sound("sound/death-sound.wav")
                 mort.play()
                 pygame.mixer.music.stop()
                 import main
@@ -311,9 +371,18 @@ class Game:
 
     def temps(self,temps_max_sec):
         """
-        Crée et affiche le décompte du temps restant pour finir le niveau. Renvoi au menu si le temps est à 0.
+Description :
+    Cette fonction est responsable de la création et de l'affichage d'un compte à rebours pour un niveau de jeu. Elle calcule le temps restant en fonction du temps initial et du temps maximum autorisé pour le niveau. Si le temps est écoulé, elle joue un effet sonore, arrête la musique de fond et retourne au menu principal.
 
-        :param temps_max_sec: le temps maximum pour réaliser le niveau
+Paramètres :
+    self : L'instance de la classe à laquelle cette méthode appartient.
+    temps_max_sec : Un entier représentant le temps maximum autorisé en secondes pour le niveau de jeu. Il doit être supérieur à 0.
+Préconditions :
+    La bibliothèque Pygame doit être importée et initialisée avant d'appeler cette fonction.
+    Le fichier son "sound/death-sound.wav" doit être présent à l'emplacement spécifié.
+Postconditions :
+    Le compte à rebours est affiché sur l'écran du jeu.
+    Si le temps restant atteint 0, un effet sonore est joué, la musique de fond est arrêtée et le menu principal est affiché.
         """
         assert temps_max_sec>0,"Le temps doit être supérieur à 0"
         if len(self.lst_time_init)==0:
@@ -324,7 +393,7 @@ class Game:
         text_temps, rect = GAME_FONT.render(str(temps_restant),(255,163,26))
         self.screen.blit(text_temps, (70, 15))
         if temps_restant == 0:
-            ouch = pygame.mixer.Sound("sound/death-sound.mp3")
+            ouch = pygame.mixer.Sound("sound/death-sound.wav")
             ouch.play()
             pygame.mixer.music.stop()
             import main
@@ -333,7 +402,46 @@ class Game:
 
     def run(self):
         """
-        La fonction principale du mode histoire
+Description :
+    La fonction run constitue la boucle principale du mode histoire du jeu. Elle est responsable de la gestion de l'affichage, de l'interaction avec le joueur et de la progression du jeu dans le contexte du mode histoire.
+
+Paramètres :
+    Aucun paramètre externe n'est requis pour cette fonction. Cependant, elle utilise les attributs et méthodes de l'instance de la classe à laquelle elle appartient.
+
+Fonctionnalités :
+    Initialisation :
+
+    Crée une instance de l'objet clock de Pygame pour réguler la fréquence de rafraîchissement.
+    Lance la musique de fond en mode boucle.
+Boucle Principale :
+
+    Maintient la boucle principale (while run:) tant que la variable run est vraie.
+    Appelle la méthode save_location de l'objet player pour sauvegarder la position actuelle du joueur.
+    Appelle les méthodes handle_input et update pour gérer les entrées utilisateur et mettre à jour l'état du jeu, respectivement.
+    Centre le groupe d'éléments graphiques autour du centre du joueur.
+    Affiche les éléments du groupe sur l'écran.
+    Affiche le nombre de statues trouvées sur l'écran.
+Affichage d'Alertes (Story Progression) :
+
+    Affiche des alertes spécifiques à chaque niveau (niv) pour informer le joueur de nouveaux défis ou dangers.
+    Utilise la bibliothèque pyautogui pour afficher des boîtes de dialogue.
+Gestion du Temps (Niveau 2) :
+
+    Si le niveau est supérieur ou égal à 2, appelle la fonction temps avec une limite de 140 secondes.
+Gestion des Événements Pygame :
+
+    Capture les événements Pygame, tels que les clics de souris, pour permettre à l'utilisateur d'interagir avec le jeu.
+    Si le bouton "HOME" est cliqué, arrête la musique et retourne au menu principal en important le module main.
+    Si l'événement de fermeture de fenêtre (pygame.QUIT) est détecté, arrête la boucle principale, ferme Pygame, et termine l'exécution du programme.
+Fréquence de Rafraîchissement :
+
+    Utilise clock.tick(60) pour maintenir une fréquence de rafraîchissement de 60 images par seconde.
+Conditions Spécifiques au Niveau :
+    Pour chaque niveau (niv), affiche des alertes spécifiques en fonction de la variable nbr_alert.
+Postconditions :
+    La boucle principale se termine lorsque la variable run devient fausse ou lorsque l'événement de fermeture de fenêtre est détecté.
+    Les ressources Pygame sont correctement libérées.
+    Le programme se termine proprement lors de la fermeture de la fenêtre ou du retour au menu principal.
         """
         clock = pygame.time.Clock()
         pygame.mixer.music.play(-1) #pour le passer en boucle

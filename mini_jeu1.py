@@ -31,6 +31,22 @@ class Meteor(pygame.sprite.Sprite):
         self.rotation_angle = 0
 
     def update(self):
+        """
+Description :
+    La fonction update est utilisée pour mettre à jour la position et l'orientation d'un objet, dans le jeu.
+
+Fonctionnalités :
+    Déplace l'objet vers le bas ou vers la droite en fonction de la valeur de l'attribut gauche_ou_haut.
+    Gère le déplacement en boucle de l'objet lorsqu'il atteint le bord de l'écran.
+    Met à jour l'angle de rotation de l'objet et applique une rotation à l'image.
+Préconditions :
+    Les attributs rect, speedy, rotation_angle, image, et original_image doivent être correctement initialisés avant d'appeler cette fonction.
+    SCREEN_HEIGHT et SCREEN_WIDTH doivent représenter les dimensions de l'écran de jeu.
+Effets :
+    Modifie la position de l'objet en fonction de sa vitesse verticale (speedy) ou horizontale.
+    Gère le redémarrage de la position de l'objet lorsqu'il atteint le bord de l'écran.
+    Met à jour l'angle de rotation de l'objet et applique une rotation à l'image.
+        """
         if self.gauche_ou_haut==1:
             self.rect.y += self.speedy
             if self.rect.top > SCREEN_HEIGHT:
@@ -52,7 +68,7 @@ class mini_jeu1:
         pygame.mixer.music.unload()
         pygame.mixer.quit()
         pygame.mixer.init()
-        pygame.mixer.music.load("sound/mj1.mp3")
+        pygame.mixer.music.load("sound/mj1.wav")
         pygame.mixer.music.set_volume(0.7)
         pygame.mixer.music.play(-1)
 
@@ -96,7 +112,19 @@ class mini_jeu1:
 
     def handle_input(self):
         """
-        gère les mouvements en appelant les fonctions de player si l'on appuie sur les bonnes touches, et gère l'inversion des touches pour le monde 6
+Description :
+    La fonction handle_input est utilisée pour gérer les entrées de l'utilisateur liées aux mouvements du joueur. Elle appelle les fonctions de déplacement du joueur en fonction des touches pressées et gère l'inversion des touches pour le monde 6.
+
+Préconditions :
+    La fonction doit être appelée dans la boucle principale du jeu pour détecter les événements liés aux touches.
+Paramètres :
+    Aucun paramètre explicite n'est passé à cette fonction. Cependant, elle utilise les méthodes de l'objet player pour gérer les mouvements.
+
+Effets :
+    Appelle les méthodes de déplacement du joueur (move_up, move_down, move_left, move_right) en fonction des touches pressées.
+    Appelle la méthode change_animation pour mettre à jour l'animation du joueur en fonction de la direction du mouvement.
+Postconditions :
+    Les mouvements du joueur sont gérés en fonction des touches pressées.
         """
         pressed = pygame.key.get_pressed()
 
@@ -115,8 +143,23 @@ class mini_jeu1:
 
     def add_solde(self,a_ajoute):
         """
-        Ajoute la quantité a_ajoute à la valeur de la clé solde dans le dictionnaire du fichier sauvegarde
-        :param a_ajoute: la quantité à ajouter au solde
+Description :
+    La fonction add_solde est utilisée pour ajouter une quantité spécifiée au solde associé à un utilisateur dans le fichier de sauvegarde.
+
+Paramètres :
+    a_ajoute : La quantité à ajouter au solde existant.
+Préconditions :
+    Le fichier de sauvegarde (sauvegarde.txt) doit exister et contenir les données attendues au bon format (utilisé le fichier init.py si c'est pas bon)
+Effets :
+    Lit le fichier de sauvegarde pour récupérer les données actuelles.
+    Ajoute la quantité spécifiée au solde associé à l'utilisateur.
+    Met à jour le fichier de sauvegarde avec la nouvelle valeur de solde.
+    Met à jour l'attribut solde de l'instance de la classe.
+    Met à jour l'attribut text_solde pour refléter la nouvelle valeur de solde.
+    Active le marqueur a_ete_ajoute pour indiquer que l'ajout a été effectué et ne le faire qu'une fois par seconde.
+Postconditions :
+    Le solde associé à l'utilisateur est mis à jour dans le fichier de sauvegarde.
+    Les attributs solde, text_solde, et a_ete_ajoute sont mis à jour.
         """
         with open("sauvegarde.txt", "r") as fichier:
             for elem in fichier:
@@ -134,7 +177,22 @@ class mini_jeu1:
 
     def temps(self):
         """
-        crée et affiche le chrono, et ajoute 1 gemme au solde toutes les 20 secondes
+Description :
+    La fonction temps est utilisée pour créer et afficher un chronomètre dans le jeu. Elle ajoute également périodiquement une gemme au solde du joueur et gère l'apparition de météores à des intervalles spécifiques.
+
+Préconditions :
+    La police GAME_FONT doit être définie avant d'appeler cette fonction.
+Effets :
+    Initialise le temps de départ si la liste lst_time_init est vide.
+    Calcule le temps écoulé depuis le début du jeu.
+    Affiche le temps écoulé à l'écran à l'aide de la police GAME_FONT.
+    Ajoute 1 gemme au solde toutes les 20 secondes.
+    Ajoute un météore toutes les 7 secondes.
+    Gère l'ajout de météores à des intervalles spécifiques.
+Postconditions :
+    Le temps écoulé est affiché à l'écran.
+    Des gemmes sont ajoutées au solde du joueur à des intervalles spécifiques.
+    Des météores sont ajoutés au jeu à des intervalles spécifiques.
         """
         if len(self.lst_time_init)==0:
             self.lst_time_init.append(int(pygame.time.get_ticks()/1000))
@@ -156,6 +214,24 @@ class mini_jeu1:
             self.meteor_add=False
 
     def run(self):
+        """
+Description :
+    La fonction run constitue la boucle principale du jeu. Elle gère les événements Pygame, les entrées utilisateur, la mise à jour des sprites, l'affichage des éléments graphiques, la collision avec les météores, l'affichage du solde, et la gestion du temps.
+
+Préconditions :
+    Les sprites, les images, la musique, et les polices nécessaires doivent être correctement initialisés avant d'appeler cette fonction.
+Effets :
+    Gère les événements Pygame, tels que la fermeture de fenêtre et les clics de souris.
+    Appelle la fonction handle_input pour gérer les entrées utilisateur.
+    Met à jour les sprites avec la méthode update.
+    Affiche les éléments graphiques à l'écran.
+    Gère la collision du joueur avec les météores.
+    Affiche le solde du joueur à l'écran.
+    Gère le temps dans le jeu avec la fonction temps.
+Postconditions :
+    La boucle principale du jeu fonctionne jusqu'à ce que l'utilisateur quitte le jeu ou ferme la fenêtre.
+    Les événements, les entrées utilisateur, les collisions, et les mises à jour sont gérés conformément au code de la fonction.
+        """
         running = True
         clock = pygame.time.Clock()
         while running:
@@ -194,7 +270,6 @@ class mini_jeu1:
                     quit()
 
             clock.tick(60)
-
 
 if __name__=='__main__':
     game1 = mini_jeu1()

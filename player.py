@@ -2,7 +2,6 @@ import pygame
 import animation
 import random
 
-
 class Player(animation.AnimateSprite):
     def __init__(self, x, y,skin="visual/perso_mec/mec3.png",taille=1,speed=2):
         super().__init__(skin=skin,taille=taille)#initialise la classe animation mis en entrée de cette classe
@@ -52,8 +51,10 @@ class Player(animation.AnimateSprite):
         self.position = self.old_position
         self.rect.topleft = self.position
         self.feet.midbottom = self.rect.midbottom
-        ouch = pygame.mixer.Sound(f"sound/male_pain{random.randint(1,4)}.mp3")#permet de diversifier les bruits
+        ouch = pygame.mixer.Sound(f"sound/male_pain{random.randint(1,4)}.wav")#permet de diversifier les bruits
         ouch.play()
     def get_pos(self):
+        """
+        renvoie la position
+        """
         return self.position
-
