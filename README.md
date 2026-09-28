@@ -1,4 +1,8 @@
-# The Impossible *(casse pas ton écran)*
+# ⚔️ Viking Quest — *The Impossible (casse pas ton écran)*
+
+![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white)
+![Pygame](https://img.shields.io/badge/Pygame-2.x-green)
+![Tiled](https://img.shields.io/badge/Maps-Tiled-orange)
 
 Jeu d'aventure/labyrinthe en 2D développé en **Python avec Pygame**, réalisé dans le cadre du projet de NSI en Terminale par **Maxime Sempels** et **Ilès Said Ouamar**.
 
@@ -19,8 +23,8 @@ Jeu d'aventure/labyrinthe en 2D développé en **Python avec Pygame**, réalisé
 Prérequis : Python 3.10+
 
 ```bash
-git clone <url-du-depot>
-cd <nom-du-depot>
+git clone https://github.com/Rjk3d/Viking-Quest-Pygame.git
+cd Viking-Quest-Pygame
 pip install -r requirements.txt
 ```
 
